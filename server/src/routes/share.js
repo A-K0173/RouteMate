@@ -5,8 +5,6 @@ const requireAuth = require('../middleware/auth');
 const DEFAULT_EXPIRY_HOURS = 24 * 7;
 const MAX_EXPIRY_HOURS = 24 * 30;
 
-// Read-only view of an itinerary for the public share page.
-// Deliberately omits user ids and trip ids.
 function loadSharedItinerary(database, itineraryId) {
   const header = database
     .prepare(
@@ -63,7 +61,6 @@ function loadSharedItinerary(database, itineraryId) {
 function createShareRouter({ database = require('../db'), authenticate = requireAuth } = {}) {
   const router = express.Router();
 
-  // POST /api/itineraries/:id/share  (login required; owner only)
   router.post('/itineraries/:id/share', authenticate, (req, res) => {
     const itineraryId = Number(req.params.id);
     if (!Number.isSafeInteger(itineraryId) || itineraryId < 1) {
@@ -96,7 +93,6 @@ function createShareRouter({ database = require('../db'), authenticate = require
     return res.status(201).json({ token, expiresAt, url: `${clientUrl}/shared/${token}` });
   });
 
-  // GET /api/shared/:token  (no login; read-only)
   router.get('/shared/:token', (req, res) => {
     const { token } = req.params;
     if (!/^[0-9a-f]{64}$/.test(token)) {
