@@ -70,7 +70,7 @@ Owen will offer to help Isaac with the map after the itinerary algorithm is done
 | `GET /api/places/search?q=` | Aareez | Search destinations using Nominatim |
 | `POST /api/trips/:id/places`, `DELETE /api/places/:id` | Aareez | Add and remove places |
 | `POST /api/trips/:id/itinerary` | Owen | Generate and save an itinerary |
-| `GET /api/itineraries/:id`, `PUT /api/itineraries/:id` | Owen | Read and save manual itinerary edits |
+| `GET /api/itineraries/:id`, `PUT /api/itineraries/:id` | Owen | Read an itinerary and replace its day plans/stops after edits |
 | `POST /api/itineraries/:id/share` | Jerome | Create a share link |
 | `GET /api/shared/:token` | Jerome | Read a shared itinerary |
 | `POST /api/trips/:id/import` | Aareez | Import a video link (last) |
@@ -131,7 +131,9 @@ They verify distance, one-time place assignment, day capacity, the Tokyo east/we
 
 ### Itinerary API endpoint
 
-`POST /api/trips/:id/itinerary` reads the trip and its places, generates days, and saves the itinerary, day plans, and stops in a SQLite transaction. It returns the itinerary response shape above. It responds with `404` for a trip the signed-in user does not own, `400` for invalid dates, trips with no places, or trips whose places exceed the total daily capacity.
+`POST /api/trips/:id/itinerary` reads the trip and its places, generates days, and saves the itinerary, day plans, and stops in a SQLite transaction. `GET /api/itineraries/:id` returns the agreed itinerary shape. `PUT /api/itineraries/:id` accepts `{ "days": [...] }` using that shape and replaces all day plans and stops in a transaction. It validates that the days match the trip duration, each day has no more than six stops, stop places belong to the trip and are not duplicated, and stop order/travel times are valid. All three endpoints check trip ownership through the authenticated user and return `404` when the itinerary or trip is not available to that user.
+
+The itinerary API tests use an in-memory SQLite database. Run `npm test` from `server/` to verify generation, reading, editing, ownership, and invalid-edit behavior.
 
 Until Jerome's JWT middleware is integrated, the local auth placeholder only accepts requests when both `NODE_ENV=development` and `ENABLE_INSECURE_AUTH_STUB=true` are set. It assigns test user ID `1`; never enable this outside local development and replace the placeholder before merging. The endpoint otherwise rejects requests until real authentication is added. The example environment file leaves this switch disabled.
 
