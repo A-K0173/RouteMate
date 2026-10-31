@@ -5,7 +5,7 @@ const requireAuth = require('../middleware/auth');
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const BCRYPT_ROUNDS = 10;
-// Compared against when the email is unknown, so login timing doesn't reveal which emails exist.
+
 const DUMMY_HASH = bcrypt.hashSync('not-a-real-password', BCRYPT_ROUNDS);
 
 function signToken(userId) {
@@ -18,7 +18,7 @@ function signToken(userId) {
 function createAuthRouter({ database = require('../db'), authenticate = requireAuth } = {}) {
   const router = express.Router();
 
-  // POST /api/auth/register
+
   router.post('/register', (req, res) => {
     const { name, email, password } = req.body || {};
 
@@ -32,7 +32,7 @@ function createAuthRouter({ database = require('../db'), authenticate = requireA
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
     if (password.length > 72) {
-      // bcrypt ignores everything after 72 bytes
+
       return res.status(400).json({ error: 'Password must be at most 72 characters' });
     }
 
@@ -54,7 +54,6 @@ function createAuthRouter({ database = require('../db'), authenticate = requireA
     }
   });
 
-  // POST /api/auth/login  ->  { token, user }
   router.post('/login', (req, res) => {
     const { email, password } = req.body || {};
     if (typeof email !== 'string' || typeof password !== 'string') {
@@ -76,7 +75,6 @@ function createAuthRouter({ database = require('../db'), authenticate = requireA
     });
   });
 
-  // GET /api/auth/me  - quick way for the client (and you) to check a token
   router.get('/me', authenticate, (req, res) => {
     const user = database
       .prepare('SELECT id, name, email, user_type FROM users WHERE id = ?')
