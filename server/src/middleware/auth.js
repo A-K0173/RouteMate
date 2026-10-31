@@ -1,14 +1,26 @@
-function requireAuth(req, res, next) {
-  const allowDevelopmentStub =
-    process.env.NODE_ENV === 'development' &&
-    process.env.ENABLE_INSECURE_AUTH_STUB === 'true';
+const jwt = require('jsonwebtoken');
 
-  if (!allowDevelopmentStub) {
-    return res.status(401).json({ error: 'Authentication is not configured' });
+function requireAuth(req, res, next) {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    return res.status(500).json({ error: 'Server authentication is not configured' });
   }
 
-  req.user = { id: 1 };
-  return next();
+  const [scheme, token] = (req.headers.authorization || '').split(' ');
+  if (scheme !== 'Bearer' || !token) {
+    return res.status(401).json({ error: 'Missing or malformed Authorization header' });
+  }
+
+  try {
+    const payload = jwt.verify(token, secret, { algorithms: ['HS256'] });
+    const id = Number(payload.sub);
+    if (!Number.isSafeInteger(id) || id < 1) throw new Error('Invalid subject');
+    req.user = { id };
+    return next();
+  } catch (error) {
+    const message = error.name === 'TokenExpiredError' ? 'Token expired' : 'Invalid token';
+    return res.status(401).json({ error: message });
+  }
 }
 
 module.exports = requireAuth;
