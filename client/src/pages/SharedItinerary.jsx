@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-// Public, read-only page. No login and no Authorization header.
-// Isaac: register it in the router as  <Route path="/shared/:token" element={<SharedItinerary />} />
-// (outside any login-protected route). The Vite proxy already forwards /api to the server.
 export default function SharedItinerary() {
   const { token } = useParams()
   const [state, setState] = useState({ status: 'loading' })
@@ -57,7 +54,7 @@ export default function SharedItinerary() {
           )}
         </section>
       ))}
-      {/* Optional: render itinerary.days[].stops[] lat/lng on a read-only Leaflet map */}
+      {}
     </main>
   )
 }
