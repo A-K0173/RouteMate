@@ -1,4 +1,3 @@
-// Uses the REAL auth middleware (no stub) with an in-memory database.
 process.env.JWT_SECRET = 'test-secret-for-auth-share-tests';
 
 const test = require('node:test');
@@ -141,7 +140,6 @@ test('done criteria: register, log in, then POST /api/trips/:id/itinerary with t
   assert.equal(created.body.tripId, tripId);
   assert.equal(created.body.days.length, 2);
 
-  // another user cannot generate an itinerary for this trip
   const other = await signUp(server, 'Bob', 'bob@example.com');
   const forbidden = await call(server, `/api/trips/${tripId}/itinerary`, {
     method: 'POST',
@@ -161,7 +159,6 @@ test('share link: owner creates it, anyone reads it logged out, expiry and owner
   });
   const itineraryId = created.body.id;
 
-  // must be logged in, and must own the itinerary
   assert.equal(
     (await call(server, `/api/itineraries/${itineraryId}/share`, { method: 'POST' })).status,
     401,
@@ -188,7 +185,6 @@ test('share link: owner creates it, anyone reads it logged out, expiry and owner
     1,
   );
 
-  // public read: no Authorization header at all
   const shared = await call(server, `/api/shared/${share.body.token}`);
   assert.equal(shared.status, 200);
   assert.equal(shared.body.readOnly, true);
@@ -201,15 +197,12 @@ test('share link: owner creates it, anyone reads it logged out, expiry and owner
     ['Senso-ji', 'Ueno Park'],
   );
 
-  // the share endpoint is read-only
   const write = await call(server, `/api/shared/${share.body.token}`, { method: 'PUT', body: {} });
   assert.equal(write.status, 404);
 
-  // unknown token
   assert.equal((await call(server, `/api/shared/${'0'.repeat(64)}`)).status, 404);
   assert.equal((await call(server, '/api/shared/not-a-token')).status, 404);
 
-  // expired token
   database
     .prepare('UPDATE share_links SET expires_at = ? WHERE token = ?')
     .run(new Date(Date.now() - 1000).toISOString(), share.body.token);
