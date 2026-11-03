@@ -145,6 +145,20 @@ The itinerary API tests use an in-memory SQLite database. Run `npm test` from `s
 
 Until Jerome's JWT middleware is integrated, the local auth placeholder only accepts requests when both `NODE_ENV=development` and `ENABLE_INSECURE_AUTH_STUB=true` are set. It assigns test user ID `1`; never enable this outside local development and replace the placeholder before merging. The endpoint otherwise rejects requests until real authentication is added. The example environment file leaves this switch disabled.
 
+## Prototype limitations
+
+This is a prototype. Some backend features are not used by the React app yet:
+
+| Backend feature | Frontend status |
+|---|---|
+| `POST /api/trips/:id/import` (video import) | No UI. The endpoint returns candidate place names and adds nothing. |
+| `PUT /api/trips/:id` | No way to edit a trip's title, destination, or dates. |
+| `DELETE /api/trips/:id` | No way to delete a trip. |
+| `GET /api/auth/me` | Not called. The app relies on the stored token until a request returns 401. |
+| Share link expiry (`expiresInHours` on `POST /api/itineraries/:id/share`) | Always uses the 7-day default. |
+
+The backend also allows the same place to be added to a trip twice, and it does not update an existing itinerary when a trip's dates or places change. The UI does not warn about either.
+
 ## Team workflow
 
 - Work on feature branches; suggested names are `feature/itinerary-engine`, `feature/auth`, `feature/frontend`, and `feature/trips-places`.
