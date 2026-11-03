@@ -1,6 +1,6 @@
 ## Database, Trips and Places (Aareez)
 
-**Status:** Built on `feature/apis`. Trips, place search, place management, seed data and video import are implemented and tested. The video import has been tested against a stubbed YouTube response only, because it needs a YouTube API key to run live.
+**Status:** Built on `feature/apis`. Trips, place search, place management, seed data and video import are implemented and tested. The video import is covered by automated tests with a stubbed YouTube response, and was also run once against the live YouTube Data API.
 
 ### What was built
 
@@ -41,7 +41,7 @@ I also ran the app in a browser with the real backend: logged in as the demo use
 
 ### Limitations and future work
 
-- Video import only reads the video description, so it works for videos that list places in chapters or lists, and not for videos that only mention places in speech. It has not yet been run against the live YouTube API.
+- Video import only reads the video description, so it works for videos that list places in chapters or lists, and not for videos that only mention places in speech. A live run on a Tokyo guide whose description lists chapters returned the neighbourhood names (Shibuya, Harajuku, Shinjuku, Tokyo Station and so on); other videos have not been tried.
 - The same place can be added to a trip more than once.
 - Changing a trip's dates does not update an itinerary that was already generated. The itinerary has to be generated again.
 - Place search depends on Nominatim being available, and its results are only as good as OpenStreetMap's data.
