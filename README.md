@@ -49,6 +49,14 @@ Open <http://localhost:5173>. To verify the Vite proxy and backend health route,
 
 The SQLite database is created at `server/routemate.db` when the backend starts. Its tables are initialized from `server/database/schema.sql`.
 
+To load demo data (a demo user and a Tokyo trip with seven places), run this from `server/`, then log in with `demo@example.com` / `demo12345`:
+
+```bash
+npm run seed
+```
+
+Place search uses the public Nominatim service, so set `NOMINATIM_USER_AGENT` in `server/.env` to identify the app and a contact. Video import needs a YouTube Data API key in `YOUTUBE_API_KEY`; without one `POST /api/trips/:id/import` returns 503.
+
 ## Stack and project ownership
 
 | Member | Owns | Main folders/files |
