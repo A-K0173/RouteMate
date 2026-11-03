@@ -8,6 +8,8 @@ RouteMate is a travel-planning application built with React, Express, and SQLite
 
 - Node.js and npm
 - Git
+- **Windows only:** the [Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with the C++ development tools installed (2017 or newer). The server's `better-sqlite3` package requires these, otherwise  `npm run dev` in `server/` can fail without them.
+
 
 ### Install dependencies
 
