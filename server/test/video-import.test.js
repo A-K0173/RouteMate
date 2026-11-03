@@ -67,6 +67,24 @@ test('extractCandidates pulls place names from chapters and lists', () => {
   ]);
 });
 
+test('extractCandidates removes countdown labels such as "Number 10 :"', () => {
+  const countdown = [
+    'Timestamps :',
+    '0:00 Start',
+    '0:31 Number 10 : Senso-ji Temple',
+    '1:00 Number 9 : Vending Machines',
+    '1:47 No. 8 - Harajuku',
+    '2:23 #7 Mount Fuji',
+  ].join('\n');
+
+  assert.deepEqual(extractCandidates(countdown), [
+    'Senso-ji Temple',
+    'Vending Machines',
+    'Harajuku',
+    'Mount Fuji',
+  ]);
+});
+
 test('extractCandidates handles empty input', () => {
   assert.deepEqual(extractCandidates(''), []);
   assert.deepEqual(extractCandidates(undefined), []);

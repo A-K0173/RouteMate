@@ -10,6 +10,8 @@ const MAX_NAME_LENGTH = 80;
 const TIMESTAMP_LINE_RE = /^\(?\d{1,2}:\d{2}(?::\d{2})?\)?\s*[-–—:.)]*\s*(.+)$/;
 const LIST_LINE_RE = /^(?:[-*•]|\d+[.)])\s+(.+)$/;
 const URL_RE = /https?:\/\/\S+/g;
+// Countdown videos label chapters like "Number 10 : Senso-ji Temple" or "#3 - Ueno Park".
+const RANK_PREFIX_RE = /^\s*(?:number|no\.?|#)\s*\d+\s*[-–—:.)]*\s*/i;
 // Chapter titles that describe the video rather than a place.
 const NOT_A_PLACE_RE =
   /^(intro|introduction|outro|conclusion|recap|summary|overview|welcome|thanks|thank you|subscribe|final thoughts|ending|start|beginning|tips|budget|links?|music|credits)\b/i;
@@ -41,6 +43,7 @@ function parseVideoId(value) {
 function cleanName(text) {
   const name = text
     .replace(URL_RE, '')
+    .replace(RANK_PREFIX_RE, '')
     .replace(/^[\s\-–—:.)•*]+|[\s\-–—:.,;!]+$/g, '')
     .replace(/\s+/g, ' ');
   return name.length >= 2 && name.length <= MAX_NAME_LENGTH && !NOT_A_PLACE_RE.test(name)
