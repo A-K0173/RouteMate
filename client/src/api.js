@@ -1,5 +1,5 @@
-// set to false when the trips and places routes are merged on the backend
-export const USE_MOCK = true
+// set to true to build pages without the backend running
+export const USE_MOCK = false
 
 export function getToken() {
   return localStorage.getItem('token')

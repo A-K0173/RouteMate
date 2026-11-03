@@ -49,6 +49,14 @@ Open <http://localhost:5173>. To verify the Vite proxy and backend health route,
 
 The SQLite database is created at `server/routemate.db` when the backend starts. Its tables are initialized from `server/database/schema.sql`.
 
+To load demo data (a demo user and a Tokyo trip with seven places), run this from `server/`, then log in with `demo@example.com` / `demo12345`:
+
+```bash
+npm run seed
+```
+
+Place search uses the public Nominatim service, so set `NOMINATIM_USER_AGENT` in `server/.env` to identify the app and a contact. Video import needs a YouTube Data API key in `YOUTUBE_API_KEY`; without one `POST /api/trips/:id/import` returns 503.
+
 ## Stack and project ownership
 
 | Member | Owns | Main folders/files |
@@ -136,6 +144,20 @@ They verify distance, one-time place assignment, day capacity, the Tokyo east/we
 The itinerary API tests use an in-memory SQLite database. Run `npm test` from `server/` to verify generation, reading, editing, ownership, and invalid-edit behavior.
 
 Until Jerome's JWT middleware is integrated, the local auth placeholder only accepts requests when both `NODE_ENV=development` and `ENABLE_INSECURE_AUTH_STUB=true` are set. It assigns test user ID `1`; never enable this outside local development and replace the placeholder before merging. The endpoint otherwise rejects requests until real authentication is added. The example environment file leaves this switch disabled.
+
+## Prototype limitations
+
+This is a prototype. Some backend features are not used by the React app yet:
+
+| Backend feature | Frontend status |
+|---|---|
+| `POST /api/trips/:id/import` (video import) | No UI. The endpoint returns candidate place names and adds nothing. |
+| `PUT /api/trips/:id` | No way to edit a trip's title, destination, or dates. |
+| `DELETE /api/trips/:id` | No way to delete a trip. |
+| `GET /api/auth/me` | Not called. The app relies on the stored token until a request returns 401. |
+| Share link expiry (`expiresInHours` on `POST /api/itineraries/:id/share`) | Always uses the 7-day default. |
+
+The backend also allows the same place to be added to a trip twice, and it does not update an existing itinerary when a trip's dates or places change. The UI does not warn about either.
 
 ## Team workflow
 
